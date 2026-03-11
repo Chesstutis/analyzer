@@ -1,20 +1,34 @@
 package analyzer
 
 import (
+	"fmt"
+	"log"
+	"os"
+
 	chess "github.com/corentings/chess/v2"
-	"strings"
 )
 
-func ParsePGN(pgn string) (game *chess.Game, err error) {
-
-	reader := strings.NewReader(pgn)
-
-	parsedPgn, err := chess.PGN(reader)
+func ParsePGN(filePath string) (*chess.Game, error) {
+	f, err := os.Open(filePath)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
+	defer f.Close()
 
-	game = chess.NewGame(parsedPgn)
+	return nil, nil
+}
+
+func ParsePGNString(pgn string) (*chess.Game, error) {
+
+	return nil, nil
+}
+
+func ParseMultiPGN(filePath string) ([]*chess.Game, error) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
 
 	return nil, nil
 }

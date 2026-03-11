@@ -106,6 +106,7 @@ type Puzzle struct {
 
 func (AnalyzedGame) PuzzlesForColor(c chess.Color) []Puzzle {
 
+	return nil
 }
 
 // ---------------------
