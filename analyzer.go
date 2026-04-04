@@ -1,7 +1,6 @@
 package analyzer
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/corentings/chess/v2"
