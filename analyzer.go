@@ -34,7 +34,7 @@ func (a *Analyzer) Close() {
 func (a *Analyzer) AnalyzeGame(game *chess.Game) (*GameAnalysis, error) {
 	gameAnalysis := GameAnalysis{}
 	// initialize uci engine with new game
-	if err := a.engine.Run(uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
+	if err := a.engine.Run(uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame, uci.CmdSetOption{Name: "Threads", Value: "8"}, uci.CmdSetOption{Name: "Hash", Value: "512"}, uci.CmdSetOption{Name: "Ponder", Value: "false"}); err != nil {
 		return nil, err
 	}
 
@@ -43,7 +43,7 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game) (*GameAnalysis, error) {
 
 		// find best engine move
 		cmdPos := uci.CmdPosition{Position: pos}
-		cmdGo := uci.CmdGo{MoveTime: time.Second} // should replace time with config value
+		cmdGo := uci.CmdGo{Depth: 15} // should replace time with config value
 
 		if err := a.engine.Run(cmdPos, cmdGo); err != nil {
 			return nil, err
