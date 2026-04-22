@@ -46,10 +46,6 @@ type Puzzle struct {
 	BestMove   *chess.Move
 }
 
-// Backward-compatible:
-//
-//	NewAnalyzer(engine)
-//	NewAnalyzer(engine, cfg)
 func NewAnalyzer(eng *uci.Engine, cfgs ...Config) (*Analyzer, error) {
 	if eng == nil {
 		return nil, fmt.Errorf("nil engine")
