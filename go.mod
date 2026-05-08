@@ -1,6 +1,6 @@
 module github.com/chesstutis/analyzer
 
-go 1.26.1
+go 1.26
 
 require github.com/corentings/chess/v2 v2.3.6
 
