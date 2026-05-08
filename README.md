@@ -21,3 +21,4 @@ https://codecov.io/github/chesstutis/analyzer)
   - integrate corentings/opening package so the analysis will skip the "Book Moves"
 - GitHub Workflows:
   - setup some github workflows for releases, test coverage...
+### test
