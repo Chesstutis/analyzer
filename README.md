@@ -1,4 +1,4 @@
-![Go Version](https://img.shields.io/github/go-mod/go-version/chesstutis/analyzer)
+![Go Version](https://img.shields.io/badge/go-1.26-00ADD8?logo=go)
 [![Tests](https://github.com/chesstutis/analyzer/actions/workflows/test.yml/badge.svg)](
 https://github.com/chesstutis/analyzer/actions/workflows/test.yml)
 [![codecov](https://codecov.io/github/chesstutis/analyzer/graph/badge.svg)](
