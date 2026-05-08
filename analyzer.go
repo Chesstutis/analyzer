@@ -30,21 +30,23 @@ func DefaultConfig() Config {
 	}
 }
 
-type Analyzer struct {
-	engine *uci.Engine
-	cfg    Config
-	mu     sync.Mutex
-}
+type (
+	Analyzer struct {
+		engine *uci.Engine
+		cfg    Config
+		mu     sync.Mutex
+	}
 
-type GameAnalysis struct {
-	Puzzles []Puzzle
-}
+	GameAnalysis struct {
+		Puzzles []Puzzle
+	}
 
-type Puzzle struct {
-	Position   *chess.Position
-	PlayerMove *chess.Move
-	BestMove   *chess.Move
-}
+	Puzzle struct {
+		Position   *chess.Position
+		PlayerMove *chess.Move
+		BestMove   *chess.Move
+	}
+)
 
 func NewAnalyzer(eng *uci.Engine, cfgs ...Config) (*Analyzer, error) {
 	if eng == nil {
