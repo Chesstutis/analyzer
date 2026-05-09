@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-
 func TestStockfishGame(t *testing.T) {
 	eng, err := uci.New("stockfish")
 	if err != nil {
@@ -74,5 +73,63 @@ func TestChesstutisVsAlex(t *testing.T) {
 	gameAnalysis, err := a.AnalyzeGame(game)
 	fmt.Println("Puzzles: ")
 	fmt.Println(gameAnalysis.Puzzles)
+}
 
+func TestNilGame(t *testing.T) {
+	eng, err := uci.New("stockfish")
+	if err != nil {
+		panic(err)
+	}
+	defer eng.Close()
+
+	a, err := NewAnalyzer(eng)
+	if err != nil {
+		panic(err)
+	}
+
+	gameAnalysis, err := a.AnalyzeGame(nil)
+
+	if gameAnalysis != nil {
+		t.Errorf("nil game didnt return nil game analysis")
+	}
+}
+
+func TestInvalidConfig(t *testing.T) {
+	cfg := Config{
+		Threads:            -1,
+		HashMB:             -1,
+		BestMoveDepth:      -1,
+		VerifyMoveTime:     -1,
+		BlunderThresholdCP: -1,
+		SkipOpeningPlies:   -1,
+	}
+	eng, err := uci.New("stockfish")
+	if err != nil {
+		panic(err)
+	}
+	defer eng.Close()
+
+	_, err = NewAnalyzer(eng, cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	cfg = Config{
+		Threads:            1000000,
+		HashMB:             1000000,
+		BestMoveDepth:      1000000,
+		VerifyMoveTime:     1000000,
+		BlunderThresholdCP: 1000000,
+		SkipOpeningPlies:   1000000,
+	}
+	eng, err = uci.New("stockfish")
+	if err != nil {
+		panic(err)
+	}
+	defer eng.Close()
+
+	_, err = NewAnalyzer(eng, cfg)
+	if err != nil {
+		panic(err)
+	}
 }
