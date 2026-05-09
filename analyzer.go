@@ -70,10 +70,10 @@ func NewAnalyzer(eng *uci.Engine, cfgs ...Config) (*Analyzer, error) {
 	if cfg.VerifyMoveTime <= 0 || cfg.VerifyMoveTime >= time.Second*10 {
 		cfg.VerifyMoveTime = DefaultConfig().VerifyMoveTime
 	}
-	if cfg.BlunderThresholdCP <= 0 || cfg.BlunderThresholdCP >= 10 {
+	if cfg.BlunderThresholdCP <= 0 || cfg.BlunderThresholdCP >= 10000 {
 		cfg.BlunderThresholdCP = DefaultConfig().BlunderThresholdCP
 	}
-	if cfg.SkipOpeningPlies < 0 || cfg.BlunderThresholdCP >= 20 {
+	if cfg.SkipOpeningPlies < 0 || cfg.SkipOpeningPlies >= 20 {
 		cfg.SkipOpeningPlies = 0
 	}
 
