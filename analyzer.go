@@ -58,22 +58,22 @@ func NewAnalyzer(eng *uci.Engine, cfgs ...Config) (*Analyzer, error) {
 		cfg = cfgs[0]
 	}
 
-	if cfg.Threads <= 0 {
+	if cfg.Threads <= 0 || cfg.Threads >= runtime.NumCPU()*2 {
 		cfg.Threads = DefaultConfig().Threads
 	}
-	if cfg.HashMB <= 0 {
+	if cfg.HashMB <= 0 || cfg.HashMB >= 16384 {
 		cfg.HashMB = DefaultConfig().HashMB
 	}
-	if cfg.BestMoveDepth <= 0 {
+	if cfg.BestMoveDepth <= 0 || cfg.BestMoveDepth >= 50 {
 		cfg.BestMoveDepth = DefaultConfig().BestMoveDepth
 	}
-	if cfg.VerifyMoveTime <= 0 {
+	if cfg.VerifyMoveTime <= 0 || cfg.VerifyMoveTime >= time.Second*10 {
 		cfg.VerifyMoveTime = DefaultConfig().VerifyMoveTime
 	}
-	if cfg.BlunderThresholdCP <= 0 {
+	if cfg.BlunderThresholdCP <= 0 || cfg.BlunderThresholdCP >= 10000 {
 		cfg.BlunderThresholdCP = DefaultConfig().BlunderThresholdCP
 	}
-	if cfg.SkipOpeningPlies < 0 {
+	if cfg.SkipOpeningPlies < 0 || cfg.SkipOpeningPlies >= 20 {
 		cfg.SkipOpeningPlies = 0
 	}
 
