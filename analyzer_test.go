@@ -118,7 +118,7 @@ func TestInvalidConfig(t *testing.T) {
 		Threads:            1000000,
 		HashMB:             1000000,
 		BestMoveDepth:      1000000,
-		VerifyMoveTime:     1000000,
+		VerifyMoveTime:     time.Second * 1000000,
 		BlunderThresholdCP: 1000000,
 		SkipOpeningPlies:   1000000,
 	}
