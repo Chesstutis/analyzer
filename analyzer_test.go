@@ -40,7 +40,7 @@ func TestStockfishGame(t *testing.T) {
 		panic(err)
 	}
 
-	gameAnalysis, err := a.AnalyzeGame(game)
+	gameAnalysis, err := a.AnalyzeGame(game, chess.Black)
 	fmt.Println("Puzzles: ")
 	fmt.Println(gameAnalysis.Puzzles)
 }
@@ -70,7 +70,7 @@ func TestChesstutisVsAlex(t *testing.T) {
 		panic(err)
 	}
 
-	gameAnalysis, err := a.AnalyzeGame(game)
+	gameAnalysis, err := a.AnalyzeGame(game, chess.Black)
 	fmt.Println("Puzzles: ")
 	fmt.Println(gameAnalysis.Puzzles)
 }
@@ -87,7 +87,7 @@ func TestNilGame(t *testing.T) {
 		panic(err)
 	}
 
-	gameAnalysis, err := a.AnalyzeGame(nil)
+	gameAnalysis, err := a.AnalyzeGame(nil, chess.NoColor)
 
 	if gameAnalysis != nil {
 		t.Errorf("nil game didnt return nil game analysis")

@@ -99,7 +99,7 @@ func (a *Analyzer) Close() {
 	}
 }
 
-func (a *Analyzer) AnalyzeGame(game *chess.Game) (*GameAnalysis, error) {
+func (a *Analyzer) AnalyzeGame(game *chess.Game, player chess.Color) (*GameAnalysis, error) {
 	if game == nil {
 		return nil, fmt.Errorf("nil game")
 	}
