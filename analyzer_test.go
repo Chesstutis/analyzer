@@ -40,7 +40,7 @@ func TestStockfishGame(t *testing.T) {
 		panic(err)
 	}
 
-	gameAnalysis, err := a.AnalyzeGame(game, chess.Black)
+	gameAnalysis, err := a.AnalyzeGame(game, chess.White)
 	fmt.Println("Puzzles: ")
 	fmt.Println(gameAnalysis.Puzzles)
 }
@@ -70,7 +70,7 @@ func TestChesstutisVsAlex(t *testing.T) {
 		panic(err)
 	}
 
-	gameAnalysis, err := a.AnalyzeGame(game, chess.Black)
+	gameAnalysis, err := a.AnalyzeGame(game, chess.White)
 	fmt.Println("Puzzles: ")
 	fmt.Println(gameAnalysis.Puzzles)
 }

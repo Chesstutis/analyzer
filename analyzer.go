@@ -99,9 +99,12 @@ func (a *Analyzer) Close() {
 	}
 }
 
-func (a *Analyzer) AnalyzeGame(game *chess.Game, player chess.Color) (*GameAnalysis, error) {
+func (a *Analyzer) AnalyzeGame(game *chess.Game, color chess.Color) (*GameAnalysis, error) {
 	if game == nil {
-		return nil, fmt.Errorf("nil game")
+		return nil, fmt.Errorf("error nil game")
+	}
+	if color == chess.NoColor {
+		return nil, fmt.Errorf("error no color")
 	}
 
 	a.mu.Lock()
@@ -118,7 +121,16 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game, player chess.Color) (*GameAnaly
 	notation := chess.UCINotation{}
 	moves := game.Moves()
 
+	parity := 0
+	if color == chess.Black {
+		parity = 1
+	}
+
 	for ply, move := range moves {
+		// skip other players moves
+		if ply % 2 != parity {
+			continue
+		}
 		if move == nil || move.Parent() == nil {
 			continue
 		}
