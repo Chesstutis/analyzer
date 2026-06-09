@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/corentings/chess/v2"
 	"github.com/corentings/chess/v2/uci"
+	"log"
 	"strings"
 	"testing"
 	"time"
@@ -73,6 +74,50 @@ func TestChesstutisVsAlex(t *testing.T) {
 	gameAnalysis, err := a.AnalyzeGame(game, chess.White)
 	fmt.Println("Puzzles: ")
 	fmt.Println(gameAnalysis.Puzzles)
+}
+
+func TestSkipMoves(t *testing.T) {
+	pgn, err := chess.PGN(strings.NewReader(chesstutisVsAlex))
+
+	if err != nil {
+		t.Fatalf("PGN parsing failed: %v", err)
+	}
+
+	game := chess.NewGame(pgn)
+
+	fmt.Println(game.String())
+
+	eng, err := uci.New("stockfish")
+	if err != nil {
+		panic(err)
+	}
+	defer eng.Close()
+
+	a, err := NewAnalyzer(eng)
+
+	if err != nil {
+		panic(err)
+	}
+
+	gameAnalysis, err := a.AnalyzeGame(game, chess.White)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, p := range gameAnalysis.Puzzles {
+		if p.Position.Turn() != chess.White {
+			log.Fatal("puzzle for wrong player returned")
+		}
+	}
+
+	gameAnalysis, err = a.AnalyzeGame(game, chess.Black)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, p := range gameAnalysis.Puzzles {
+		if p.Position.Turn() != chess.Black {
+			log.Fatal("puzzle for wrong player returned")
+		}
+	}
 }
 
 func TestNilGame(t *testing.T) {
