@@ -136,15 +136,11 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game, color chess.Color) (*GameAnalys
 		playerRes := a.engine.SearchResults()
 		playerScore := playerRes.Info.Score.CP
 
-		if puzzle.IsPuzzle(bestScore, playerScore, a.cfg.BlunderThresholdCP) {
-			analysis.Puzzles = append(analysis.Puzzles, Puzzle{
-				Position:   pos,
-				PlayerMove: move,
-				BestMove:   bestMove,
-			})
+		puz := puzzle.TryGeneratePuzzle(pos, bestScore, bestMove, playerScore, move, a.cfg.BlunderThresholdCP)
+		if puz != nil {
+			analysis.Puzzles = append(analysis.Puzzles, *puz)
 		}
 	}
-
 	return analysis, nil
 }
 
