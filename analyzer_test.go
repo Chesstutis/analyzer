@@ -11,6 +11,48 @@ import (
 	"github.com/corentings/chess/v2/uci"
 )
 
+const chesstutisVsAlex = "1. e4 c6 2. Nc3 d5 3. d4 dxe4 4. Nxe4 Bf5 5. Bd3 Qxd4 6. Nf3 Qb6 7. O-O Nd7 8. b3 Ngf6 9. Nxf6+ Nxf6 10. Bxf5 e6 11. Bd3 Bc5 12. Bb2 Ng4 13. h3 Bxf2+ 14. Kh1 Ne3 15. Qe2 Nxf1 16. Qxf2 Qxf2 17. Bxf1 O-O 18. Nd4 Rad8 19. Rd1 c5 20. Nb5 Rxd1 0-1"
+
+func TestNilEng(t *testing.T) {
+	a, err := NewAnalyzer(nil)
+	if a != nil {
+		t.Fail()
+	}
+	if err.Error() != "nil engine" {
+		t.Fail()
+	}
+}
+
+func TestNoColor(t *testing.T) {
+	pgn, err := chess.PGN(strings.NewReader(chesstutisVsAlex))
+
+	if err != nil {
+		t.Fatalf("PGN parsing failed: %v", err)
+	}
+
+	game := chess.NewGame(pgn)
+
+	eng, err := uci.New("stockfish")
+	if err != nil {
+		panic(err)
+	}
+	defer eng.Close()
+
+	a, err := NewAnalyzer(eng)
+
+	if err != nil {
+		panic(err)
+	}
+
+	gameAnalysis, err := a.AnalyzeGame(game, chess.NoColor)
+	if gameAnalysis != nil {
+		t.Fail()
+	}
+	if err.Error() != "error no color" {
+		t.Fail()
+	}
+}
+
 func TestStockfishGame(t *testing.T) {
 	eng, err := uci.New("stockfish")
 	if err != nil {
@@ -47,7 +89,6 @@ func TestStockfishGame(t *testing.T) {
 	fmt.Println(gameAnalysis.Puzzles)
 }
 
-const chesstutisVsAlex = "1. e4 c6 2. Nc3 d5 3. d4 dxe4 4. Nxe4 Bf5 5. Bd3 Qxd4 6. Nf3 Qb6 7. O-O Nd7 8. b3 Ngf6 9. Nxf6+ Nxf6 10. Bxf5 e6 11. Bd3 Bc5 12. Bb2 Ng4 13. h3 Bxf2+ 14. Kh1 Ne3 15. Qe2 Nxf1 16. Qxf2 Qxf2 17. Bxf1 O-O 18. Nd4 Rad8 19. Rd1 c5 20. Nb5 Rxd1 0-1"
 
 func TestChesstutisVsAlex(t *testing.T) {
 	pgn, err := chess.PGN(strings.NewReader(chesstutisVsAlex))
@@ -211,5 +252,11 @@ func TestAnalyzeConfigs(t *testing.T) {
 		fmt.Println("==================================================")
 		fmt.Println("==================================================")
 		fmt.Println()
+	}
+}
+
+func TestNilSameMove(t *testing.T) {
+	if sameMove(nil, chess.UCINotation{}, nil, nil) {
+		t.Fail()
 	}
 }
