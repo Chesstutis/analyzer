@@ -2,33 +2,18 @@ package analyzer
 
 import (
 	"fmt"
-	"runtime"
 	"sync"
-	"time"
 
+	"github.com/chesstutis/analyzer/internal/config"
+	"github.com/chesstutis/analyzer/internal/puzzle"
 	"github.com/corentings/chess/v2"
 	"github.com/corentings/chess/v2/uci"
 )
 
-type Config struct {
-	Threads            int
-	HashMB             int
-	BestMoveDepth      int
-	VerifyMoveTime     time.Duration
-	BlunderThresholdCP int
-	SkipOpeningPlies   int
-}
-
-func DefaultConfig() Config {
-	return Config{
-		Threads:            max(1, runtime.NumCPU()/2),
-		HashMB:             1024,
-		BestMoveDepth:      12,
-		VerifyMoveTime:     100 * time.Millisecond,
-		BlunderThresholdCP: 200,
-		SkipOpeningPlies:   8,
-	}
-}
+// Re-export internal types for public API
+type Puzzle = puzzle.Puzzle
+type AlternateMove = puzzle.AlternateMove
+type Config = config.Config
 
 type (
 	Analyzer struct {
@@ -40,12 +25,6 @@ type (
 	GameAnalysis struct {
 		Puzzles []Puzzle
 	}
-
-	Puzzle struct {
-		Position   *chess.Position
-		PlayerMove *chess.Move
-		BestMove   *chess.Move
-	}
 )
 
 func NewAnalyzer(eng *uci.Engine, cfgs ...Config) (*Analyzer, error) {
@@ -53,29 +32,11 @@ func NewAnalyzer(eng *uci.Engine, cfgs ...Config) (*Analyzer, error) {
 		return nil, fmt.Errorf("nil engine")
 	}
 
-	cfg := DefaultConfig()
+	cfg := config.DefaultConfig()
 	if len(cfgs) > 0 {
 		cfg = cfgs[0]
 	}
-
-	if cfg.Threads <= 0 || cfg.Threads >= runtime.NumCPU()*2 {
-		cfg.Threads = DefaultConfig().Threads
-	}
-	if cfg.HashMB <= 0 || cfg.HashMB >= 16384 {
-		cfg.HashMB = DefaultConfig().HashMB
-	}
-	if cfg.BestMoveDepth <= 0 || cfg.BestMoveDepth >= 50 {
-		cfg.BestMoveDepth = DefaultConfig().BestMoveDepth
-	}
-	if cfg.VerifyMoveTime <= 0 || cfg.VerifyMoveTime >= time.Second*10 {
-		cfg.VerifyMoveTime = DefaultConfig().VerifyMoveTime
-	}
-	if cfg.BlunderThresholdCP <= 0 || cfg.BlunderThresholdCP >= 10000 {
-		cfg.BlunderThresholdCP = DefaultConfig().BlunderThresholdCP
-	}
-	if cfg.SkipOpeningPlies < 0 || cfg.SkipOpeningPlies >= 20 {
-		cfg.SkipOpeningPlies = 0
-	}
+	cfg = config.Normalize(cfg)
 
 	if err := eng.Run(
 		uci.CmdUCI,
@@ -128,7 +89,7 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game, color chess.Color) (*GameAnalys
 
 	for ply, move := range moves {
 		// skip other players moves
-		if ply % 2 != parity {
+		if ply%2 != parity {
 			continue
 		}
 		if move == nil || move.Parent() == nil {
@@ -175,15 +136,11 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game, color chess.Color) (*GameAnalys
 		playerRes := a.engine.SearchResults()
 		playerScore := playerRes.Info.Score.CP
 
-		if bestScore-playerScore >= a.cfg.BlunderThresholdCP {
-			analysis.Puzzles = append(analysis.Puzzles, Puzzle{
-				Position:   pos,
-				PlayerMove: move,
-				BestMove:   bestMove,
-			})
+		puz := puzzle.TryGeneratePuzzle(pos, bestScore, bestMove, playerScore, move, a.cfg.BlunderThresholdCP)
+		if puz != nil {
+			analysis.Puzzles = append(analysis.Puzzles, *puz)
 		}
 	}
-
 	return analysis, nil
 }
 
