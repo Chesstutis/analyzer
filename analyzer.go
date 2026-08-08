@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/chesstutis/analyzer/internal/config"
+	"github.com/chesstutis/analyzer/internal/opening"
 	"github.com/chesstutis/analyzer/internal/puzzle"
 	"github.com/corentings/chess/v2"
 	"github.com/corentings/chess/v2/uci"
@@ -87,6 +88,10 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game, color chess.Color) (*GameAnalys
 		parity = 1
 	}
 
+
+	// number of moves to skip due to being within the opening.
+	skipPlies := max(a.cfg.SkipOpeningPlies, opening.BookPlies(moves))
+
 	for ply, move := range moves {
 		// skip other players moves
 		if ply%2 != parity {
@@ -96,7 +101,7 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game, color chess.Color) (*GameAnalys
 			continue
 		}
 
-		if ply < a.cfg.SkipOpeningPlies {
+		if ply < skipPlies {
 			continue
 		}
 
