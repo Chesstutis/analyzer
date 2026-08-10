@@ -8,46 +8,48 @@ import (
 	ecobook "github.com/corentings/chess/v2/opening"
 )
 
+type trieNode struct {
+	children map[string]*trieNode
+}
+
 var (
-	once  sync.Once
-	lines [][]string
+	once sync.Once
+	root *trieNode
 )
 
 func load() {
+	root = &trieNode{children: make(map[string]*trieNode)}
 	book := ecobook.NewBookECO()
 	for _, o := range book.Possible(nil) {
-		lines = append(lines, strings.Fields(o.PGN()))
+		node := root
+		for _, tok := range strings.Fields(o.PGN()) {
+			next, ok := node.children[tok]
+			if !ok {
+				next = &trieNode{children: make(map[string]*trieNode)}
+				node.children[tok] = next
+			}
+			node = next
+		}
 	}
 }
 
-//returns the number of BookPlies
+// returns the number of BookPlies
 func BookPlies(moves []*chess.Move) int {
 	once.Do(load)
 	if len(moves) == 0 {
 		return 0
 	}
 
-	played := make([]string, len(moves))
+	node := root
 	for i, m := range moves {
 		if m == nil {
 			return i
 		}
-		played[i] = m.String()
+		next, ok := node.children[m.String()]
+		if !ok {
+			return i
+		}
+		node = next
 	}
-
-	best := 0
-	for _, line := range lines {
-		n := min(len(line), len(played))
-		i := 0
-		for i < n && line[i] == played[i] {
-			i++
-		}
-		if i > best {
-			best = i
-		}
-		if best == len(played) {
-			break
-		}
-	}
-	return best
+	return len(moves)
 }
