@@ -91,17 +91,14 @@ func (a *Analyzer) AnalyzeGame(game *chess.Game, color chess.Color) (*GameAnalys
 
 	// number of moves to skip due to being within the opening.
 	skipPlies := max(a.cfg.SkipOpeningPlies, opening.BookPlies(moves))
+	start := skipPlies
+	if start%2 != parity {
+		start++
+	}
 
-	for ply, move := range moves {
-		// skip other players moves
-		if ply%2 != parity {
-			continue
-		}
+	for ply := start; ply < len(moves); ply += 2 {
+		move := moves[ply]
 		if move == nil || move.Parent() == nil {
-			continue
-		}
-
-		if ply < skipPlies {
 			continue
 		}
 
